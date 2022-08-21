@@ -35,23 +35,28 @@
 ### api升级[openmessaging/openconnect] 
 - [增强] https://github.com/openmessaging/openconnect/issues/41
 ```
-> 统一struct构建方式，帮助快速完成struct的构建
->
+1.统一struct构建方式，帮助快速完成struct的构建
+2.优化task api, 精细化api , 减少实现中暴露的空方法
+3.增加offset writer的抽象
+4.增强SchemaBuilder能力，支持array、map类型构建，=
+
 ```
 - [新特性] https://github.com/openmessaging/openconnect/issues/43
+
 ```
-> 统一struct构建方式，帮助快速完成struct的构建
->
+增加错误上报的api，允许 sink task 自定义上报错误数据信息到指定的错误topic中
+
 ```
 
 -[增强] https://github.com/openmessaging/openconnect/issues/51
+
 ```
-> 统一struct构建方式，帮助快速完成struct的构建
+优化SourceTask commit 上报api , 允许透出record 发送相关属性，帮助用户自维护offset信息
 ```
 
 -[增强] https://github.com/openmessaging/openconnect/issues/53
 ```
-> 统一struct构建方式，帮助快速完成struct的构建
+增加 key field用来表示数据的唯一性，并用来保证有序 
 ```
 
 ### Runtimme升级
@@ -134,7 +139,7 @@ org.apache.rocketmq.connect.transforms.SetMaximumPrecision$Value
 
 -[增强] https://github.com/apache/rocketmq-connect/issues/233
 ```
-实现相同key数据的发送是有序的
+实现相同key数据的发送是有序的；满足业务应用中同一条数据的CRUD可以按照时间线发送
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/238
