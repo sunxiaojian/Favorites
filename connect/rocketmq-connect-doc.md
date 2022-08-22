@@ -314,7 +314,7 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 增加增量快照的方式的配置案例
 > 计划支持自定义新的数据库CDC模式的更新 
 * WorkerSourceTask 支持 exactly-once的提交方式
-> 当前的模式是最少一次提交，当前模式下只能保证数据不丢，无法保证恰好一次
+> 当前的模式是最少一次提交，当前模式下只能保证数据不丢，但可能会存在重复拉取
 * Docker下运行支持
 > 支持任务在docker下运行
 * k8s operator支持
