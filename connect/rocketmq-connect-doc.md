@@ -72,12 +72,12 @@ Debezium插件支持, 支持在RocketMQ下面使用无缝使用debezium 及 tran
 
 -[增强] https://github.com/apache/rocketmq-connect/issues/147
 ```
-> Transformchain 添加 stop 方法， 用于在connector关闭时卸载自定义的对象和关闭自定义的连接
+Transformchain 添加 stop 方法， 用于在connector关闭时卸载自定义的对象和关闭自定义的连接
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/153
 ```
-> rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对不同存储的支持
+rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对不同存储的支持
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/155
