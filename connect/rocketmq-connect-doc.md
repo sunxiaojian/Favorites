@@ -34,36 +34,59 @@
 
 ### api升级[openmessaging/openconnect] 
 - [增强] https://github.com/openmessaging/openconnect/issues/41
-```
-1.统一struct构建方式，帮助快速完成struct的构建
-2.优化task api, 精细化api , 减少实现中暴露的空方法
-3.增加offset writer的抽象
-4.增强SchemaBuilder能力，支持array、map类型构建，=
+> 1.增强SchemaBuilder能力，支持所有FieldType声明类型schema的快速构建, 支持struct、array、map复杂类型的快速构建
 
+```Struct 类型 schema 构建
+ io.openmessaging.connector.api.data.Schema schema = SchemaBuilder.struct()
+                .name("test")
+                .defaultValue("")
+                .optional()
+                .doc("this is a demo")
+                .field("string-field", SchemaBuilder.string().build())
+                .field("bool-field", SchemaBuilder.bool().build())
+                .build();
 ```
+> 2.统一struct构建方式，帮助快速完成struct的构建
+
+```Struct填充方式
+ io.openmessaging.connector.api.data.Schema schema = SchemaBuilder.struct()
+                .name("test")
+                .defaultValue("")
+                .optional()
+                .doc("this is a demo")
+                .field("string-field", SchemaBuilder.string().build())
+                .field("bool-field", SchemaBuilder.bool().build())
+                .build();
+
+        Struct struct = new Struct(schema);
+        struct.put("string-field", "test");
+        struct.put("string-field", true);
+```
+
 - [新特性] https://github.com/openmessaging/openconnect/issues/43
+> 增加错误上报的api，允许 sink task 自定义上报错误数据信息到指定的错误topic中;
 
-```
-增加错误上报的api，允许 sink task 自定义上报错误数据信息到指定的错误topic中
-
-```
+>> [SinkTaskContext](https://github.com/openmessaging/openconnect/blob/master/connector/src/main/java/io/openmessaging/connector/api/component/task/sink/SinkTaskContext.java)
+![img.png](SinkTaskContext.png)
 
 -[增强] https://github.com/openmessaging/openconnect/issues/51
 
-```
-优化SourceTask commit 上报api , 允许透出record 发送相关属性，帮助用户自维护offset信息
-```
+> 优化SourceTask commit 上报api , 允许透出record 发送相关属性，帮助用户自维护offset信息
+>> [SourceTask](https://github.com/openmessaging/openconnect/blob/master/connector/src/main/java/io/openmessaging/connector/api/component/task/source/SourceTask.java)
+![img_1.png](SourceTask.png)
 
 -[增强] https://github.com/openmessaging/openconnect/issues/53
-```
-增加 key field用来表示数据的唯一性，并用来保证有序 
-```
-
+> 增加 key field用来表示数据的唯一性，并用来保证有序
+>> [ConnectRecord](https://github.com/openmessaging/openconnect/blob/master/connector/src/main/java/io/openmessaging/connector/api/data/ConnectRecord.java)
+![img_2.png](ConnectRecord.png)
 ### Runtimme升级
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/93
+
+[rocketmq-connect-debezium](https://github.com/apache/rocketmq-connect/tree/master/connectors/rocketmq-connect-debezium)
+
 ```
-Debezium插件支持, 支持在RocketMQ下面使用无缝使用debezium 及 transform来进行数据的拉取和转换
+Debezium插件支持, 支持在RocketMQ下面使用无缝使用debezium 及 transform来进行数据的拉取和转换 
 ```
 -[Bug] https://github.com/apache/rocketmq-connect/issues/143
 ```
@@ -76,6 +99,7 @@ Transformchain 添加 stop 方法， 用于在connector关闭时卸载自定义�
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/153
+[rocketmq-connect-jdbc](https://github.com/apache/rocketmq-connect/tree/master/connectors/rocketmq-connect-jdbc)
 ```
 rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对不同存储的支持
 ```
@@ -86,7 +110,12 @@ rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对�
 
 ***自定义***： 实现io.openmessaging.connector.api.data.RecordConverter
 
-``` 
+``` 使用方式
+ "value.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
+ "key.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter"
+```
+
+``` 支持的类型
 [Json     ] org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter
 [String   ] org.apache.rocketmq.connect.runtime.converter.record.StringConverter
 [Short    ] org.apache.rocketmq.connect.runtime.converter.record.ShortConverter
@@ -117,7 +146,29 @@ rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对�
 
 添加一些常用的transform，方便大家可以按照模板去实现自己的transform
 
+Transform配置案例[单个配置]
 ```
+"transforms": "Replace",
+"transforms.Replace.field.pattern": "company",
+"transforms.Replace.field.replacement": "company02",
+"transforms.Replace.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+```
+Transform配置案例[多个配置],会按照配置顺序依次执行
+```
+"transforms": "Replace, Replace02",
+"transforms.Replace.field.pattern": "company",
+"transforms.Replace.field.replacement": "company02",
+"transforms.Replace.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+"transforms.Replace02.field.pattern": "company02",
+"transforms.Replace02.field.replacement": "company03",
+"transforms.Replace02.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+```
+1. transforms: 为固定配置,不可变
+2. Replace, Replace02: 为配置名称，可自定义, 多个用","分割，若为多个，下面配置均需重复配置
+3. transforms.${transform-name}.class: 用此配置来表示transform的class
+4. transforms.${transform-name}.{config.key}: transform中定义的实际的配置项；
+
+``` 已经支持的transform
 org.apache.rocketmq.connect.transforms.ChangeCase$Key 
 org.apache.rocketmq.connect.transforms.ChangeCase$Value 
 org.apache.rocketmq.connect.transforms.ExtractNestedField$Value 
@@ -139,10 +190,12 @@ org.apache.rocketmq.connect.transforms.SetMaximumPrecision$Value
 
 -[增强] https://github.com/apache/rocketmq-connect/issues/233
 ```
-实现相同key数据的发送是有序的；满足业务应用中同一条数据的CRUD可以按照时间线发送
+实现相同key数据的发送是有序的；满足业务应用中同一条数据的CRUD可以按照更新的时间线去发送
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/238
+
+增加Pause 和 Resume 能力，Rest API返回标准化 
 ```
 [ 1.] 优化WorkerSourceTask 增加 pause 和 resume的功能，提供source task 状态上报能力
 [ 2.] 优化WorkerSinkTask 并将 Rocketmq Consumer 替换成DefaultLitePullConsumer, 以使用 pause 、resume 及seek 功能，优化commit 提交流程，提供sink task状态上报能力
@@ -262,6 +315,10 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 计划支持自定义新的数据库CDC模式的更新 
 * WorkerSourceTask 支持 exactly-once的提交方式
 > 当前的模式是最少一次提交，当前模式下只能保证数据不丢，无法保证恰好一次
+* Docker下运行支持
+> 支持任务在docker下运行
+* k8s operator支持
+
 
 
 
