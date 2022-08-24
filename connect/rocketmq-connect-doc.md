@@ -307,15 +307,15 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 * 支持 Compact topic
 > RocketMQ Connect 存储支持Compact topic
 * Converter 替换成 RecordConverter
-> 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式 [ISSUE #](https://github.com/apache/rocketmq-connect/issues/252)
+> 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式 [ISSUE #252](https://github.com/apache/rocketmq-connect/issues/252)
 * Jdbc插件持续扩展
 > 计划增加 pg、oracle、sqlserver等关系型数据库的支持，非关系型数据库按需扩展
 * Debezium持续扩展
 > 增加增量快照的方式的配置案例
 > 计划支持自定义新的数据库CDC模式的更新 
-* WorkerSourceTask 支持 exactly-once的提交方式
+* WorkerSourceTask 支持 exactly-once的提交方式 [ISSUE #185](https://github.com/apache/rocketmq-connect/issues/185)
 > 当前的模式是最少一次提交，当前模式下只能保证数据不丢，但可能会存在重复拉取
-* Docker下运行支持
+* Docker下运行支持  [ISSUE #215](https://github.com/apache/rocketmq-connect/issues/215)
 > 支持任务在docker下运行
 * k8s operator支持
 
