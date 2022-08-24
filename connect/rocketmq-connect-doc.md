@@ -303,11 +303,11 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 ## 未来规划
 
 * 支持 Schema registry
-> 适配io.openmessaging.connector.api.data.RecordConverter, 优先支持json、avro两种方式
+> 适配io.openmessaging.connector.api.data.RecordConverter, 优先支持json、avro两种方式 [ISSUE #270](https://github.com/apache/rocketmq-connect/issues/270)
 * 支持 Compact topic
 > RocketMQ Connect 存储支持Compact topic
 * Converter 替换成 RecordConverter
-> 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式
+> 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式 [ISSUE #](https://github.com/apache/rocketmq-connect/issues/252)
 * Jdbc插件持续扩展
 > 计划增加 pg、oracle、sqlserver等关系型数据库的支持，非关系型数据库按需扩展
 * Debezium持续扩展
