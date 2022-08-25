@@ -86,8 +86,19 @@
 [rocketmq-connect-debezium](https://github.com/apache/rocketmq-connect/tree/master/connectors/rocketmq-connect-debezium)
 
 ```
-Debezium插件支持, 支持在RocketMQ下面使用无缝使用debezium 及 transform来进行数据的拉取和转换 
+Debezium插件支持, 支持在RocketMQ Connect 使用 debezium 及 transform来进行数据的拉取和转换 
 ```
+
+|                            | snapshot.mode                           | 锁状态          | doc                                                                   |
+|:---------------------------|:----------------------------------------|--------------|-----------------------------------------------------------------------|
+| 增量                         | never, schema_only,schema_only_recovery | Schema快照时需要锁表 |                                                                       |
+| 全量快照 + 增量                  | initial,when_needed                     | 全局锁 或者 全表锁   |                                                                       |
+| 增强快照                       | schema_only                             | 无锁           | https://debezium.io/blog/2021/10/07/incremental-snapshots/            |
+| Read only增量快照(只mysql,暂未支持) | schema_only                             | 无锁           | https://debezium.io/blog/2022/04/07/read-only-incremental-snapshots/  |
+
+[Debezium增量快照设计](https://github.com/debezium/debezium-design-documents/blob/main/DDD-3.md)
+[DBLog设计](https://www.modb.pro/db/432212)
+
 -[Bug] https://github.com/apache/rocketmq-connect/issues/143
 ```
  修复offset上报问题，保证相同名称的connector在集群中上报的名称是
@@ -213,7 +224,7 @@ org.apache.rocketmq.connect.transforms.SetMaximumPrecision$Value
 | 原配置                | 新配置                | 描述                    |
 |:-------------------|:-------------------|-----------------------|
 | connector-class    | connector.class    |                       |
-| max-tasks          | max.tasks          |                       |
+| max-task           | max.tasks          |                       |
 | value-converter    | value.converter    |                       |
 | key-converter      | key.converter      |                       |
 | connect-topicname  | connect.topicname  | source指定发送topic       |
@@ -659,14 +670,16 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式 [ISSUE #252](https://github.com/apache/rocketmq-connect/issues/252)
 * Jdbc插件持续扩展
 > 计划增加 pg、oracle、sqlserver等关系型数据库的支持，非关系型数据库按需扩展
-* Debezium持续扩展
-> 增加增量快照的方式的配置案例
-> 计划支持自定义新的数据库CDC模式的更新 
-* WorkerSourceTask 支持 exactly-once的提交方式 [ISSUE #185](https://github.com/apache/rocketmq-connect/issues/185)
+* Debezium插件持续支持
+> Read only模式增量快照
+> 
+> 支持通过debezium api 自定义 CDC 的插件
+* WorkerSourceTask 支持 exactly-once(只执行一次)的提交方式 [ISSUE #185](https://github.com/apache/rocketmq-connect/issues/185)
 > 当前的模式是最少一次提交，当前模式下只能保证数据不丢，但可能会存在重复拉取
 * Docker下运行支持  [ISSUE #215](https://github.com/apache/rocketmq-connect/issues/215)
-> 支持任务在docker下运行
-* k8s operator支持
+> 支持docker下的快速部署和任务调试
+* RocketMQ Connect operator
+>
 
 
 
