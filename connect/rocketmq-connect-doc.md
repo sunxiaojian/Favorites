@@ -89,15 +89,18 @@
 Debezium插件支持, 支持在RocketMQ Connect 使用 debezium 及 transform来进行数据的拉取和转换 
 ```
 
-|                            | snapshot.mode                           | 锁状态          | doc                                                                   |
-|:---------------------------|:----------------------------------------|--------------|-----------------------------------------------------------------------|
-| 增量                         | never, schema_only,schema_only_recovery | Schema快照时需要锁表 |                                                                       |
-| 全量快照 + 增量                  | initial,when_needed                     | 全局锁 或者 全表锁   |                                                                       |
-| 增强快照                       | schema_only                             | 无锁           | https://debezium.io/blog/2021/10/07/incremental-snapshots/            |
-| Read only增量快照(只mysql,暂未支持) | schema_only                             | 无锁           | https://debezium.io/blog/2022/04/07/read-only-incremental-snapshots/  |
+|                                            | snapshot.mode                           | 锁状态          | doc                                                                   |
+|:-------------------------------------------|:----------------------------------------|--------------|-----------------------------------------------------------------------|
+| 增量                                         | never, schema_only,schema_only_recovery | Schema快照时需要锁表 |                                                                       |
+| 全量快照 + 增量                                  | initial,when_needed                     | 全局锁 或者 全表锁   |                                                                       |
+| 增强快照                                       | schema_only                             | 无锁           | https://debezium.io/blog/2021/10/07/incremental-snapshots/            |
+| Read only增量快照(只mysql,RocketMQ Connect暂不支持) | schema_only                             | 无锁           | https://debezium.io/blog/2022/04/07/read-only-incremental-snapshots/  |
 
 [Debezium增量快照设计](https://github.com/debezium/debezium-design-documents/blob/main/DDD-3.md)
 [DBLog设计](https://www.modb.pro/db/432212)
+
+*** io.debezium.relational.RelationalSnapshotChangeEventSource.doExecute *** 
+可以看到具体的执行步骤
 
 -[Bug] https://github.com/apache/rocketmq-connect/issues/143
 ```
@@ -113,6 +116,7 @@ Transformchain 添加 stop 方法， 用于在connector关闭时卸载自定义�
 [rocketmq-connect-jdbc](https://github.com/apache/rocketmq-connect/tree/master/connectors/rocketmq-connect-jdbc)
 ```
 rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对不同存储的支持
+
 ```
 
 -[新特性] https://github.com/apache/rocketmq-connect/issues/155
@@ -124,6 +128,69 @@ rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对�
 ``` 使用方式
  "value.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
  "key.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter"
+
+-------------------Catalog---------------------------------- 
+ {
+    "schema":{
+        "name":"server_026.test_database.employee_copy3.Value",
+        "optional":true,
+        "type":"struct",
+        "fields":[
+            {
+                "field":"id",
+                "optional":true,
+                "type":"int64"
+            },
+            {
+                "field":"name",
+                "optional":true,
+                "type":"string"
+            },
+            {
+                "field":"howold",
+                "optional":true,
+                "type":"int32"
+            },
+            {
+                "optional":true,
+                "field":"male",
+                "type":"int32"
+            },
+            {
+                "optional":true,
+                "field":"company",
+                "type":"string"
+            },
+            {
+                "field":"money",
+                "optional":true,
+                "type":"double"
+            },
+            {
+                "field":"begin_time",
+                "name":"io.debezium.time.Timestamp",
+                "optional":true,
+                "type":"int64"
+            },
+            {
+                "field":"modify_time",
+                "name":"io.debezium.time.ZonedTimestamp",
+                "optional":true,
+                "type":"string"
+            }
+        ]
+    },
+    "payload":{
+        "id":12,
+        "name":"name-06",
+        "howold":19,
+        "male":3,
+        "company":null,
+        "money":0,
+        "begin_time":null,
+        "modify_time":"2022-06-14T11:57:51Z"
+    }
+}
 ```
 
 ``` 支持的类型
@@ -136,6 +203,8 @@ rocketmq-connect-jdbc升级，增加jdbc插件抽象，通过spi方式扩展对�
 [Double   ] org.apache.rocketmq.connect.runtime.converter.record.DoubleConverter
 [ByteArray] org.apache.rocketmq.connect.runtime.converter.record.ByteArrayConverter
 ```
+
+
 
 -[增强] https://github.com/apache/rocketmq-connect/issues/183
 
