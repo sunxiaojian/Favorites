@@ -746,7 +746,7 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 * WorkerSourceTask 支持 exactly-once(只执行一次)的提交方式 [ISSUE #185](https://github.com/apache/rocketmq-connect/issues/185)
 > 当前的模式是最少一次提交，当前模式下只能保证数据不丢，但可能会存在重复拉取
 * Docker下运行支持  [ISSUE #215](https://github.com/apache/rocketmq-connect/issues/215)
-> 支持docker下的快速部署和任务调试
+> 支持docker下的快速部署和任务调试，帮助使用者快速完成任务的调试
 * RocketMQ Connect operator
 >
 
