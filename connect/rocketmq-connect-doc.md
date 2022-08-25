@@ -30,7 +30,7 @@
 ## 一条数据的流转
 ![img_8.png](数据流转图.png)
 
-## 版本升级
+## 版本升级(0.1.4)
 
 ### api升级[openmessaging/openconnect] 
 - [增强] https://github.com/openmessaging/openconnect/issues/41
