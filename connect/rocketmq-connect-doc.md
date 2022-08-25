@@ -224,69 +224,418 @@ org.apache.rocketmq.connect.transforms.SetMaximumPrecision$Value
 
 ### 集群信息
 + 查看集群节点信息：
-```
-curl -X GET http://(your worker ip):(port)/getClusterInfo
-```
+> curl -X GET http://(your worker ip):(port)/getClusterInfo
 
+```
+{
+    "status": 200,
+    "body": [
+        "DefaultWorker"
+    ]
+}
+```
 + 重新加载Connector插件目录下的Connector包：
+> curl -X GET http://(your worker ip):(port)/plugin/list
+```
+{
+    "status": 200,
+    "body": [
+        {
+            "className": "org.apache.rocketmq.connect.jdbc.connector.JdbcSinkConnector",
+            "type": "SINK",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.debezium.mysql.DebeziumMysqlConnector",
+            "type": "SOURCE",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.jdbc.connector.JdbcSourceConnector",
+            "type": "SOURCE",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.ChangeCase$Key",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.ChangeCase$Value",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.ExtractNestedField$Key",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.ExtractNestedField$Value",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.PatternFilter$Key",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.PatternFilter$Value",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.PatternRename$Key",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+            "type": "TRANSFORMATION",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.ByteArrayConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.DoubleConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.FloatConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.IntegerConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.LongConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.ShortConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.StringConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
+            "type": "CONVERTER",
+            "version": "undefined"
+        }
+    ]
+}
 
 ```
-curl -X GET http://(your worker ip):(port)/plugin/reload
++ 列举所有Connector的插件
+> curl -X GET http://(your worker ip):(port)/plugin/list/connectors
+```
+{
+    "status": 200,
+    "body": [
+        {
+            "className": "org.apache.rocketmq.connect.jdbc.connector.JdbcSinkConnector",
+            "type": "SINK",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.debezium.mysql.DebeziumMysqlConnector",
+            "type": "SOURCE",
+            "version": "undefined"
+        },
+        {
+            "className": "org.apache.rocketmq.connect.jdbc.connector.JdbcSourceConnector",
+            "type": "SOURCE",
+            "version": "undefined"
+        }
+    ]
+}
+
+```
++ 重新加载Connector插件目录下的Connector包：
+> curl -X GET http://(your worker ip):(port)/plugin/reload
+```
+略
 ```
 
 ### Connector/Task管理
 
 + 创建或更新connector（存在且配置不同会更新，不存在创建）
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}
+http://127.0.0.1:8082/connectors/employee-04446
+{
+    "connector.class":"org.apache.rocketmq.connect.jdbc.connector.JdbcSourceConnector",
+    "max.tasks":"1",
+    "connect.topicname":"test-topic-02",
+    "connection.url":"jdbc:mysql://{host}:{port}",
+    "connection.user":"******",
+    "connection.password":"*******",
+    "table.whitelist":"{db}.{table}",
+    "mode": "incrementing",
+    "incrementing.column.name":"id",
+    "transforms": "Replace",
+    "transforms.Replace.field.pattern": "company",
+    "transforms.Replace.field.replacement": "company02",
+    "transforms.Replace.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+    "key.converter":"org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
+    "value.converter":"org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter"
+}
 ```
 + Pause(暂停)指定的connector
+>curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/pause
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/pause
+http://127.0.0.1:8082/connectors/employee-04446/pause
+{
+    "status": 200,
+    "body": "Connector [employee-04446] paused successfully"
+}
+
+-------------状态查看-------------
+
+{
+    "status": 200,
+    "body": {
+        "name": "employee-04446",
+        "connector": {
+            "state": "PAUSED",
+            "trace": null,
+            "workerId": "standalone-worker"
+        },
+        "tasks": [
+            {
+                "state": "PAUSED",
+                "trace": null,
+                "workerId": "standalone-worker",
+                "id": 0
+            }
+        ],
+        "type": "SOURCE"
+    }
+}
+
 ```
 + Resume(重启)指定的connector
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/resume
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/resume
+http://127.0.0.1:8082/connectors/employee-04446/resume
+{
+    "status": 200,
+    "body": "Connector [employee-04446] resumed successfully"
+}
+
+-------------状态查看-------------
+
+{
+    "status": 200,
+    "body": {
+        "name": "employee-04446",
+        "connector": {
+            "state": "RUNNING",
+            "trace": null,
+            "workerId": "standalone-worker"
+        },
+        "tasks": [
+            {
+                "state": "RUNNING",
+                "trace": null,
+                "workerId": "standalone-worker",
+                "id": 0
+            }
+        ],
+        "type": "SOURCE"
+    }
+}
+
+
 ```
 + Pause(暂停)所有的connector
-```
-curl -X GET http://(your worker ip):(port)/connectors/pause/all
-```
+>curl -X GET http://(your worker ip):(port)/connectors/pause/all
 
 + Resume(重启)所有的connector
-```
-curl -X GET http://(your worker ip):(port)/connectors/resume/all
-```
+>curl -X GET http://(your worker ip):(port)/connectors/resume/all
+
 
 + 停止并删除指定的connector(谨慎使用)
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/stop
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/stop
+http://127.0.0.1:8082/connectors/employee-04446/stop
+{
+    "status": 200,
+    "body": "Connector [employee-04446] deleted successfully"
+}
 ```
 + 停止并删除所有的connector(谨慎使用)
-```
-curl -X GET http://(your worker ip):(port)/connectors/stop/all
-```
+>curl -X GET http://(your worker ip):(port)/connectors/stop/all
 
 + 列举集群中所有connector信息
+> curl -X GET http://(your worker ip):(port)/connectors/list
 ```
-curl -X GET http://(your worker ip):(port)/connectors/list
+http://127.0.0.1:8082/connectors/list
+{
+    "status": 200,
+    "body": {
+        "employee-04446": {
+            "status": {
+                "name": "employee-04446",
+                "connector": {
+                    "state": "RUNNING",
+                    "trace": null,
+                    "workerId": "standalone-worker"
+                },
+                "tasks": [
+                    {
+                        "state": "RUNNING",
+                        "trace": null,
+                        "workerId": "standalone-worker",
+                        "id": 0
+                    }
+                ],
+                "type": "SOURCE"
+            },
+            "info": {
+                "name": "employee-04446",
+                "config": {
+                    "connector.class": "org.apache.rocketmq.connect.jdbc.connector.JdbcSourceConnector",
+                    "incrementing.column.name": "id",
+                    "transforms.Replace.field.replacement": "company02",
+                    "connection.url": "jdbc:mysql://{host}:{port}",
+                    "connection.user": “********”,
+                    "connection.password": “*******”,
+                    "transforms": "Replace",
+                    "transforms.Replace.delete.handling.mode": "none",
+                    "table.whitelist": "{db.name}.{table.name}",
+                    "mode": "incrementing",
+                    "transforms.Replace.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+                    "max.tasks": "1",
+                    "update.timestamp": "1661398218574",
+                    "connect.topicname": "test-topic-02",
+                    "transforms.Replace.field.pattern": "company",
+                    "value.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
+                    "key.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter"
+                },
+                "tasks": [
+                    {
+                        "connector": "employee-04446",
+                        "task": 0
+                    }
+                ],
+                "type": "SOURCE"
+            }
+        }
+    }
+}
+
 ```
 + 根据connectorName获取connector的配置信息
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/config
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/config
+http://127.0.0.1:8082/connectors/employee-04446/config
+
+{
+    "status": 200,
+    "body": {
+        "name": "employee-04446",
+        "config": {
+            "connector.class": "org.apache.rocketmq.connect.jdbc.connector.JdbcSourceConnector",
+            "incrementing.column.name": "id",
+            "transforms.Replace.field.replacement": "company02",
+            "connection.url": "jdbc:mysql://{host}:{port}",
+            "connection.user": “******”,
+            "connection.password": “******”,
+            "transforms": "Replace",
+            "transforms.Replace.delete.handling.mode": "none",
+            "table.whitelist": "{db.name}.{table.name}",
+            "mode": "incrementing",
+            "transforms.Replace.class": "org.apache.rocketmq.connect.transforms.PatternRename$Value",
+            "max.tasks": "1",
+            "connect.topicname": "test-topic-02",
+            "transforms.Replace.field.pattern": "company",
+            "value.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter",
+            "key.converter": "org.apache.rocketmq.connect.runtime.converter.record.json.JsonConverter"
+        },
+        "tasks": [
+            {
+                "connector": "employee-04446",
+                "task": 0
+            }
+        ],
+        "type": "SOURCE"
+    }
+}
 ```
 + 根据connectorName获取connector的状态
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/status
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/status
+http://127.0.0.1:8082/connectors/employee-04446/status
+{
+    "status": 200,
+    "body": {
+        "name": "employee-04446",
+        "connector": {
+            "state": "RUNNING",
+            "trace": null,
+            "workerId": "standalone-worker"
+        },
+        "tasks": [
+            {
+                "state": "RUNNING",
+                "trace": null, // 错误堆栈信息
+                "workerId": "standalone-worker",
+                "id": 0
+            }
+        ],
+        "type": "SOURCE"
+    }
+}
 ```
 + 根据connectorName获取connector下所有task信息
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/tasks
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/tasks
+http://127.0.0.1:8082/connectors/employee-04446/tasks
+{
+    "status": 200,
+    "body": [
+        {
+            "id": {
+                "connector": "employee-04446",
+                "task": 0
+            },
+            "config": {
+               // 详细配置信息
+            }
+        }
+    ]
+}
+
+
 ```
 
 + 根据connectorName和task id获取task状态
+> curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/tasks/{task}/status
 ```
-curl -X GET http://(your worker ip):(port)/connectors/{connectorName}/tasks/{task}/status
+http://127.0.0.1:8082/connectors/employee-04446/tasks/0/status
+{
+    "status": 200,
+    "body": {
+        "state": "RUNNING",
+        "trace": null,
+        "workerId": "standalone-worker",
+        "id": 0
+    }
+}
 ```
 
 + 获取当前worker分配的connector信息
