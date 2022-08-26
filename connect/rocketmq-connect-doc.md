@@ -754,6 +754,7 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 
 > 系统通过自定义 reporter， 上报指标信息，比如上报到指定的topic ,上报到数据库等
 
+* api访问安全控制
 
 
 
