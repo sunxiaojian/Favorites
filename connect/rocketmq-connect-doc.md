@@ -735,7 +735,7 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 适配io.openmessaging.connector.api.data.RecordConverter, 优先支持json、avro两种方式 
 * 支持 Compact topic
 > RocketMQ Connect 存储支持Compact topic
-* Converter 替换成 RecordConverter [进行中] [ISSUE #252](https://github.com/apache/rocketmq-connect/issues/252)
+* Converter 替换成 RecordConverter [完成] [ISSUE #252](https://github.com/apache/rocketmq-connect/issues/252)
 > 将存储中使用的Converter全部替换成RecordConverter，全局统一，只维护一种转换方式 
 * Jdbc插件持续扩展
 > 计划增加 pg、oracle、sqlserver等关系型数据库的支持，非关系型数据库按需扩展
@@ -749,7 +749,7 @@ curl -X GET http://(your worker ip):(port)/allocated/tasks
 > 支持docker下的快速部署和任务调试，帮助使用者快速完成任务的调试
 * RocketMQ Connect operator
 >
-* 补全指标， 增加Metrics Reporter
+* 补全指标， 增加Metrics Reporter [完成]
 > 由于重构造成了很多执行过程的指标被遗漏，需要及时补全
 > 
 > 系统通过自定义 reporter， 上报指标信息，比如上报到指定的topic ,上报到数据库等
